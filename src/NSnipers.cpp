@@ -43,6 +43,72 @@ P.S: The Above Problem is just a modified version of a popular BackTracking prob
 */
 
 #include "stdafx.h"
-int solve_nsnipers(int *battlefield, int n){
+#include<math.h>
+#include<stdlib.h>
+
+int canPlace(int *battlefield, int n, int* columns, int curSnip, int col){
+
+	int i, j;
+
+	for (i = 0; i < curSnip; i++){
+		if (columns[i] >= 0){
+			j = columns[i];
+
+			if (j == col)
+				return 0;
+			if (abs(curSnip - i) == abs(col - j))
+				return 0;
+
+			}
+
+		}
+
+	return 1;
+	}
+
+int solve_nsnipers_wrapper(int *battlefield, int n, int* columns, int curSnip){
+
+	int i;
+
+	if (curSnip >= n)
+		return 1;
+
+	if (curSnip == 5)
+		curSnip = 5;
+
+	for (i = 0; i < n; i++){
+
+
+		if (canPlace(battlefield, n, columns, curSnip, i)){
+			battlefield[curSnip*n + i] = 1;
+			columns[curSnip] = i;
+
+
+			if (solve_nsnipers_wrapper(battlefield, n, columns, curSnip + 1))
+				return 1;
+
+			battlefield[curSnip*n + i] = 0;
+			columns[curSnip] = -1;
+
+
+			}
+
+		}
+
 	return 0;
-}
+	}
+
+int solve_nsnipers(int *battlefield, int n){
+
+	if (battlefield == NULL)
+		return 0;
+
+	int *columns = (int*)malloc(n*sizeof(int));
+
+	int i;
+	for (i = 0; i < n; i++)
+		columns[i] = -1;
+
+	return solve_nsnipers_wrapper(battlefield, n, columns, 0);
+
+	}

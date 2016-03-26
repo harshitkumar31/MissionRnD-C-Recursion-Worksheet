@@ -36,7 +36,59 @@ more parameters .
 #include<stdlib.h>
 
 
+int path_exists_helper(int *maze, int rows, int columns, int x1, int y1, int x2, int y2){
+
+	int flag = 0;
+
+	if (x1 >= rows || x2 >= rows || y1 >= columns || y2 >= columns)
+		return 0;
+	if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0)
+		return 0;
+
+
+	int xdiff = x1 - x2 < 0 ? -(x1 - x2) : (x1 - x2);
+	int ydiff = y1 - y2 <0 ? -(y1 - y2) : (y1 - y2);
+
+
+
+	
+	if (maze[x1*columns + y1] == 1 && maze[x2*columns + y2] == 1){
+		if ((xdiff == 1 && ydiff == 0) || (xdiff == 0 && ydiff == 1))
+			flag = 1;
+		}
+
+	return flag;
+	}
+
+int path_exists_wrapper(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, int dir){
+	if (rows <= 0 || columns <= 0)
+		return 0;
+
+	if (path_exists_helper(maze, rows, columns, x1, y1, x2, y2))
+		return 1;
+
+	int e, s, w, n;
+
+	if ((e = path_exists_helper(maze, rows, columns, x1, y1, x1, y1 + 1)) && dir != 4)
+		return path_exists_wrapper(maze, rows, columns, x1, y1 + 1, x2, y2, 1);
+
+	if ((n = path_exists_helper(maze, rows, columns, x1, y1, x1 - 1, y1)) && dir != 3)
+		return path_exists_wrapper(maze, rows, columns, x1 - 1, y1, x2, y2, 2);
+
+
+	if ((s = path_exists_helper(maze, rows, columns, x1, y1, x1 + 1, y1)) && dir != 2)
+		return path_exists_wrapper(maze, rows, columns, x1 + 1, y1, x2, y2, 3);
+
+	if ((w = path_exists_helper(maze, rows, columns, x1, y1, x1, y1 - 1)) && dir != 1)
+		return path_exists_wrapper(maze, rows, columns, x1, y1 - 1, x2, y2, 4);
+
+
+	return 0;
+
+	}
+
 int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2)
-{
-	return 1;
-}
+	{
+
+	return path_exists_wrapper(maze, rows, columns, x1, y1, x2, y2, 0);
+	}
